@@ -38,8 +38,8 @@ export default function IntakePage() {
   };
 
   const selectSuggestion = (a: Attendee) => {
-    setFirstName(a.firstName);
-    setLastName(a.lastName);
+    setFirstName(a.first_name);
+    setLastName(a.last_name);
     if (a.phone) setPhone(a.phone);
     if (a.department) setDepartment(a.department);
     setShowSuggestions(false);
@@ -113,7 +113,7 @@ export default function IntakePage() {
                 <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-popover border border-popover-border rounded-md shadow-lg max-h-52 overflow-y-auto">
                   {suggestions.map(a => (
                     <button key={a.id} className="w-full text-left px-3 py-3 hover:bg-accent text-sm border-b border-border last:border-0" onClick={() => selectSuggestion(a)} data-testid={`suggestion-${a.id}`}>
-                      <span className="font-semibold">{a.lastName}, {a.firstName}</span>
+                      <span className="font-semibold">{a.last_name}, {a.first_name}</span>
                       {a.department && <span className="text-muted-foreground ml-2 text-xs">— {a.department}</span>}
                       {a.phone && <span className="text-muted-foreground ml-2 text-xs">{a.phone}</span>}
                     </button>

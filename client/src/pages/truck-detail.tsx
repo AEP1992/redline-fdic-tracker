@@ -94,14 +94,14 @@ function TruckBagRow({ bag, isExpanded, onToggle }: { bag: Bag; isExpanded: bool
   });
   const statusMutation = useMutation({
     mutationFn: async (s: string) => { const r = await apiRequest("PATCH", `/api/bags/${bag.id}/status`, { status: s }); return r.json(); },
-    onSuccess: (_, s) => { toast({ title: "Updated", description: `${bag.lastName} → ${STATUS_LABELS[s]}` }); queryClient.invalidateQueries({ queryKey: ["/api/bags"] }); queryClient.invalidateQueries({ queryKey: ["/api/stats"] }); },
+    onSuccess: (_, s) => { toast({ title: "Updated", description: `${bag.last_name} → ${STATUS_LABELS[s]}` }); queryClient.invalidateQueries({ queryKey: ["/api/bags"] }); queryClient.invalidateQueries({ queryKey: ["/api/stats"] }); },
   });
 
   return (
     <div className="border rounded-lg overflow-hidden">
       <div className="flex items-center gap-2 px-3 py-3 cursor-pointer hover:bg-accent/50 transition-colors" onClick={onToggle}>
-        <span className="flex-1 text-sm"><span className="font-bold">{bag.lastName}</span>, {bag.firstName}</span>
-        {bag.dayLeaving && <span className="text-xs text-muted-foreground">{bag.dayLeaving}</span>}
+        <span className="flex-1 text-sm"><span className="font-bold">{bag.last_name}</span>, {bag.first_name}</span>
+        {bag.day_leaving && <span className="text-xs text-muted-foreground">{bag.day_leaving}</span>}
         <Badge variant="outline" className={`text-xs ${STATUS_STYLES[bag.status]}`}>{STATUS_LABELS[bag.status]}</Badge>
       </div>
       {isExpanded && (
@@ -117,8 +117,8 @@ function TruckBagRow({ bag, isExpanded, onToggle }: { bag: Bag; isExpanded: bool
               {detail.statusLog.map(log => (
                 <div key={log.id} className="flex items-center gap-2 text-xs">
                   <Clock className="h-3 w-3 text-muted-foreground" /><span className="text-muted-foreground">{new Date(log.timestamp).toLocaleString()}</span>
-                  {log.previousStatus && <><Badge variant="outline" className={`text-[10px] ${STATUS_STYLES[log.previousStatus]}`}>{STATUS_LABELS[log.previousStatus]}</Badge><ArrowRight className="h-3 w-3" /></>}
-                  <Badge variant="outline" className={`text-[10px] ${STATUS_STYLES[log.newStatus]}`}>{STATUS_LABELS[log.newStatus]}</Badge>
+                  {log.previous_status && <><Badge variant="outline" className={`text-[10px] ${STATUS_STYLES[log.previous_status]}`}>{STATUS_LABELS[log.previous_status]}</Badge><ArrowRight className="h-3 w-3" /></>}
+                  <Badge variant="outline" className={`text-[10px] ${STATUS_STYLES[log.new_status]}`}>{STATUS_LABELS[log.new_status]}</Badge>
                 </div>
               ))}
             </div>

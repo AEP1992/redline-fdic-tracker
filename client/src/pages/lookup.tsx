@@ -108,7 +108,7 @@ export default function LookupPage() {
             <span className="w-6" />
           </div>
           {bagList.map(bag => (
-            <BagRow key={bag.id} bag={bag} truckName={truckMap[bag.truckId] || "?"} isExpanded={expandedId === bag.id} isSelected={selectedIds.has(bag.id)}
+            <BagRow key={bag.id} bag={bag} truckName={truckMap[bag.truck_id] || "?"} isExpanded={expandedId === bag.id} isSelected={selectedIds.has(bag.id)}
               onToggleExpand={() => setExpandedId(expandedId === bag.id ? null : bag.id)} onToggleSelect={() => toggleSelect(bag.id)} truckMap={truckMap}
             />
           ))}
@@ -129,7 +129,7 @@ function BagRow({ bag, truckName, isExpanded, isSelected, onToggleExpand, onTogg
   const statusMutation = useMutation({
     mutationFn: async (newStatus: string) => { const r = await apiRequest("PATCH", `/api/bags/${bag.id}/status`, { status: newStatus }); return r.json(); },
     onSuccess: (_, newStatus) => {
-      toast({ title: "Updated", description: `${bag.lastName} → ${STATUS_LABELS[newStatus]}` });
+      toast({ title: "Updated", description: `${bag.last_name} → ${STATUS_LABELS[newStatus]}` });
       queryClient.invalidateQueries({ queryKey: ["/api/bags"] });
       queryClient.invalidateQueries({ queryKey: ["/api/bags", bag.id] });
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
@@ -140,9 +140,9 @@ function BagRow({ bag, truckName, isExpanded, isSelected, onToggleExpand, onTogg
     <div className="border rounded-lg overflow-hidden">
       <div className="flex items-center gap-2 px-3 py-3 cursor-pointer hover:bg-accent/50 transition-colors" onClick={onToggleExpand}>
         <Checkbox checked={isSelected} onCheckedChange={() => onToggleSelect()} onClick={e => e.stopPropagation()} className="mr-1" />
-        <span className="flex-1 text-sm"><span className="font-bold">{bag.lastName}</span>, {bag.firstName}</span>
+        <span className="flex-1 text-sm"><span className="font-bold">{bag.last_name}</span>, {bag.first_name}</span>
         <span className="hidden sm:block w-44 text-sm text-muted-foreground truncate">{bag.department || "—"}</span>
-        <span className="hidden sm:block w-16 text-center text-xs text-muted-foreground">{bag.dayLeaving || "—"}</span>
+        <span className="hidden sm:block w-16 text-center text-xs text-muted-foreground">{bag.day_leaving || "—"}</span>
         <Badge variant="outline" className={`w-24 justify-center text-xs ${STATUS_STYLES[bag.status]}`}>{STATUS_LABELS[bag.status]}</Badge>
         <span className="hidden sm:block w-20 text-center text-xs text-muted-foreground">{truckName}</span>
         {isExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
@@ -167,7 +167,7 @@ function BagRow({ bag, truckName, isExpanded, isSelected, onToggleExpand, onTogg
           <div className="flex flex-wrap gap-4 text-sm">
             {bag.phone && <span className="flex items-center gap-1.5 text-muted-foreground"><Phone className="h-3.5 w-3.5" />{bag.phone}</span>}
             {bag.department && <span className="flex items-center gap-1.5 text-muted-foreground"><MapPin className="h-3.5 w-3.5" />{bag.department}</span>}
-            {bag.dayLeaving && <span className="flex items-center gap-1.5 text-muted-foreground"><Calendar className="h-3.5 w-3.5" />Leaving {bag.dayLeaving}</span>}
+            {bag.day_leaving && <span className="flex items-center gap-1.5 text-muted-foreground"><Calendar className="h-3.5 w-3.5" />Leaving {bag.day_leaving}</span>}
             <span className="text-muted-foreground">MEU: {truckName}</span>
           </div>
 
@@ -180,8 +180,8 @@ function BagRow({ bag, truckName, isExpanded, isSelected, onToggleExpand, onTogg
                   <div key={log.id} className="flex items-center gap-2 text-xs">
                     <Clock className="h-3 w-3 text-muted-foreground" />
                     <span className="text-muted-foreground">{new Date(log.timestamp).toLocaleString()}</span>
-                    {log.previousStatus && <><Badge variant="outline" className={`text-[10px] ${STATUS_STYLES[log.previousStatus]}`}>{STATUS_LABELS[log.previousStatus]}</Badge><ArrowRight className="h-3 w-3 text-muted-foreground" /></>}
-                    <Badge variant="outline" className={`text-[10px] ${STATUS_STYLES[log.newStatus]}`}>{STATUS_LABELS[log.newStatus]}</Badge>
+                    {log.previous_status && <><Badge variant="outline" className={`text-[10px] ${STATUS_STYLES[log.previous_status]}`}>{STATUS_LABELS[log.previous_status]}</Badge><ArrowRight className="h-3 w-3 text-muted-foreground" /></>}
+                    <Badge variant="outline" className={`text-[10px] ${STATUS_STYLES[log.new_status]}`}>{STATUS_LABELS[log.new_status]}</Badge>
                   </div>
                 ))}
               </div>

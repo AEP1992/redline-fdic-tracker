@@ -1,137 +1,109 @@
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import Database from "better-sqlite3";
-import { eq, like, or, desc, count as drizzleCount, sql } from "drizzle-orm";
-import {
-  trucks, bags, statusLog, attendees,
-  type Truck, type InsertTruck,
-  type Bag, type InsertBag,
-  type StatusLog, type InsertStatusLog,
-  type Attendee, type InsertAttendee,
-} from "@shared/schema";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const sqlite = new Database("redline-fdic.db");
-sqlite.pragma("journal_mode = WAL");
+const supabaseUrl = process.env.SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-sqlite.exec(`
-  CREATE TABLE IF NOT EXISTS trucks (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL UNIQUE
-  );
-  CREATE TABLE IF NOT EXISTS bags (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    first_name TEXT NOT NULL,
-    last_name TEXT NOT NULL,
-    department TEXT,
-    phone TEXT,
-    day_leaving TEXT,
-    truck_id INTEGER NOT NULL,
-    status TEXT NOT NULL DEFAULT 'checked_in',
-    notes TEXT,
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS status_log (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    bag_id INTEGER NOT NULL,
-    previous_status TEXT,
-    new_status TEXT NOT NULL,
-    timestamp TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS attendees (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    first_name TEXT NOT NULL,
-    last_name TEXT NOT NULL,
-    phone TEXT,
-    department TEXT
-  );
-`);
-
-export const db = drizzle(sqlite);
-
-export interface IStorage {
-  getTrucks(): Truck[];
-  createTruck(data: InsertTruck): Truck;
-  getBags(filters?: { truckId?: number; status?: string; search?: string }): Bag[];
-  getBag(id: number): Bag | undefined;
-  createBag(data: InsertBag): Bag;
-  updateBagStatus(id: number, status: string): Bag | undefined;
-  getStatusLog(bagId: number): StatusLog[];
-  createStatusLog(data: InsertStatusLog): StatusLog;
-  searchAttendees(query: string): Attendee[];
-  createAttendee(data: InsertAttendee): Attendee;
-  getStats(): Stats;
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set");
 }
 
+const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey);
+
+export type Truck = { id: number; name: string };
+export type Bag = {
+  id: number; first_name: string; last_name: string; department: string | null;
+  phone: string | null; day_leaving: string | null; truck_id: number;
+  status: string; notes: string | null; created_at: string; updated_at: string;
+};
+export type StatusLogEntry = {
+  id: number; bag_id: number; previous_status: string | null;
+  new_status: string; timestamp: string;
+};
+export type Attendee = {
+  id: number; first_name: string; last_name: string;
+  phone: string | null; department: string | null;
+};
+
+// Stats types
 type TruckStats = { truckId: number; truckName: string; total: number; checkedIn: number; cleaning: number; complete: number; pickedUp: number };
 type Stats = { total: number; checkedIn: number; cleaning: number; complete: number; pickedUp: number; byTruck: TruckStats[] };
 
-export class DatabaseStorage implements IStorage {
-  getTrucks(): Truck[] {
-    return db.select().from(trucks).all();
+export class SupabaseStorage {
+  // ── Trucks ──
+  async getTrucks(): Promise<Truck[]> {
+    const { data } = await supabase.from("trucks").select("*").order("id");
+    return data || [];
   }
 
-  createTruck(data: InsertTruck): Truck {
-    return db.insert(trucks).values(data).returning().get();
-  }
-
-  getBags(filters?: { truckId?: number; status?: string; search?: string }): Bag[] {
-    const allBags = db.select().from(bags).orderBy(desc(bags.updatedAt)).all();
-    let result = allBags;
-    if (filters?.truckId) result = result.filter(b => b.truckId === filters.truckId);
-    if (filters?.status) result = result.filter(b => b.status === filters.status);
+  // ── Bags ──
+  async getBags(filters?: { truckId?: number; status?: string; search?: string }): Promise<Bag[]> {
+    let query = supabase.from("bags").select("*").order("updated_at", { ascending: false });
+    if (filters?.truckId) query = query.eq("truck_id", filters.truckId);
+    if (filters?.status) query = query.eq("status", filters.status);
     if (filters?.search) {
-      const s = filters.search.toLowerCase();
-      result = result.filter(b =>
-        b.lastName.toLowerCase().includes(s) ||
-        b.firstName.toLowerCase().includes(s) ||
-        (b.department && b.department.toLowerCase().includes(s))
-      );
+      const s = `%${filters.search}%`;
+      query = query.or(`last_name.ilike.${s},first_name.ilike.${s},department.ilike.${s}`);
     }
-    return result;
+    const { data } = await query;
+    return data || [];
   }
 
-  getBag(id: number): Bag | undefined {
-    return db.select().from(bags).where(eq(bags.id, id)).get();
+  async getBag(id: number): Promise<Bag | null> {
+    const { data } = await supabase.from("bags").select("*").eq("id", id).single();
+    return data;
   }
 
-  createBag(data: InsertBag): Bag {
-    return db.insert(bags).values(data).returning().get();
+  async createBag(bag: Omit<Bag, "id">): Promise<Bag> {
+    const { data, error } = await supabase.from("bags").insert(bag).select().single();
+    if (error) throw error;
+    return data;
   }
 
-  updateBagStatus(id: number, status: string): Bag | undefined {
-    return db.update(bags).set({ status, updatedAt: new Date().toISOString() }).where(eq(bags.id, id)).returning().get();
+  async updateBagStatus(id: number, status: string): Promise<Bag | null> {
+    const { data } = await supabase.from("bags")
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq("id", id).select().single();
+    return data;
   }
 
-  getStatusLog(bagId: number): StatusLog[] {
-    return db.select().from(statusLog).where(eq(statusLog.bagId, bagId)).orderBy(desc(statusLog.timestamp)).all();
+  // ── Status Log ──
+  async getStatusLog(bagId: number): Promise<StatusLogEntry[]> {
+    const { data } = await supabase.from("status_log").select("*")
+      .eq("bag_id", bagId).order("timestamp", { ascending: false });
+    return data || [];
   }
 
-  createStatusLog(data: InsertStatusLog): StatusLog {
-    return db.insert(statusLog).values(data).returning().get();
+  async createStatusLog(entry: Omit<StatusLogEntry, "id">): Promise<StatusLogEntry> {
+    const { data, error } = await supabase.from("status_log").insert(entry).select().single();
+    if (error) throw error;
+    return data;
   }
 
-  searchAttendees(query: string): Attendee[] {
+  // ── Attendees ──
+  async searchAttendees(query: string): Promise<Attendee[]> {
     const s = `%${query}%`;
-    return db.select().from(attendees).where(
-      or(like(attendees.firstName, s), like(attendees.lastName, s), like(attendees.department, s))!
-    ).limit(8).all();
+    const { data } = await supabase.from("attendees").select("*")
+      .or(`first_name.ilike.${s},last_name.ilike.${s},department.ilike.${s}`)
+      .limit(8);
+    return data || [];
   }
 
-  createAttendee(data: InsertAttendee): Attendee {
-    return db.insert(attendees).values(data).returning().get();
-  }
-
-  getStats(): Stats {
-    const allBags = db.select().from(bags).all();
-    const allTrucks = db.select().from(trucks).all();
+  // ── Stats ──
+  async getStats(): Promise<Stats> {
+    const [{ data: allBags }, { data: allTrucks }] = await Promise.all([
+      supabase.from("bags").select("*"),
+      supabase.from("trucks").select("*").order("id"),
+    ]);
+    const bags = allBags || [];
+    const trucks = allTrucks || [];
     return {
-      total: allBags.length,
-      checkedIn: allBags.filter(b => b.status === "checked_in").length,
-      cleaning: allBags.filter(b => b.status === "cleaning").length,
-      complete: allBags.filter(b => b.status === "complete").length,
-      pickedUp: allBags.filter(b => b.status === "picked_up").length,
-      byTruck: allTrucks.map(t => {
-        const tb = allBags.filter(b => b.truckId === t.id);
+      total: bags.length,
+      checkedIn: bags.filter(b => b.status === "checked_in").length,
+      cleaning: bags.filter(b => b.status === "cleaning").length,
+      complete: bags.filter(b => b.status === "complete").length,
+      pickedUp: bags.filter(b => b.status === "picked_up").length,
+      byTruck: trucks.map(t => {
+        const tb = bags.filter(b => b.truck_id === t.id);
         return {
           truckId: t.id, truckName: t.name, total: tb.length,
           checkedIn: tb.filter(b => b.status === "checked_in").length,
@@ -144,30 +116,5 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
-
-// Seed trucks
-const existing = db.select().from(trucks).all();
-if (existing.length === 0) {
-  for (const name of ["MEU#3", "MEU#5", "MEU#6", "MEU#7", "MEU#8", "MEU#11"]) {
-    db.insert(trucks).values({ name }).run();
-  }
-  console.log("Seeded 6 MEU trucks");
-}
-
-// Seed attendees
-const ac = db.select({ cnt: drizzleCount() }).from(attendees).get();
-if (ac && ac.cnt === 0) {
-  try {
-    const fs = require("fs");
-    const path = require("path");
-    const fp = path.resolve("attendees.json");
-    if (fs.existsSync(fp)) {
-      const data = JSON.parse(fs.readFileSync(fp, "utf-8"));
-      for (const a of data) {
-        try { db.insert(attendees).values({ firstName: a.firstName, lastName: a.lastName, phone: a.phone || null, department: a.department || null }).run(); } catch {}
-      }
-      console.log(`Seeded ${data.length} attendees`);
-    }
-  } catch { console.log("No attendees.json found"); }
-}
+export const storage = new SupabaseStorage();
+export { supabase };
