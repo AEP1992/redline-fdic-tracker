@@ -75,7 +75,7 @@ export default function IntakePage() {
     onError: (err: any) => { toast({ title: "Error", description: err.message, variant: "destructive" }); },
   });
 
-  const canSubmit = truckId && lastName.trim();
+  const canSubmit = truckId && lastName.trim() && firstName.trim() && phone.trim() && department.trim() && dayLeaving;
 
   return (
     <div className="max-w-lg mx-auto space-y-4">
@@ -128,25 +128,25 @@ export default function IntakePage() {
 
             {/* First Name */}
             <div>
-              <Label className="text-sm font-medium">First Name</Label>
+              <Label className="text-sm font-medium">First Name *</Label>
               <Input value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="First name" className="h-12 text-base mt-1" data-testid="input-first-name" />
             </div>
 
             {/* Phone + Department — auto-filled */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-sm font-medium">Phone</Label>
+                <Label className="text-sm font-medium">Phone *</Label>
                 <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone" className="h-12 text-base mt-1" type="tel" data-testid="input-phone" />
               </div>
               <div>
-                <Label className="text-sm font-medium">Department</Label>
+                <Label className="text-sm font-medium">Department *</Label>
                 <Input value={department} onChange={e => setDepartment(e.target.value)} placeholder="Department" className="h-12 text-base mt-1" data-testid="input-department" />
               </div>
             </div>
 
             {/* Day Leaving */}
             <div>
-              <Label className="text-sm font-medium">Day Leaving</Label>
+              <Label className="text-sm font-medium">Day Leaving *</Label>
               <div className="grid grid-cols-4 gap-2 mt-1">
                 {["Wed", "Thurs", "Fri", "Sat"].map(day => (
                   <Button key={day} type="button" variant={dayLeaving === day ? "default" : "outline"}
