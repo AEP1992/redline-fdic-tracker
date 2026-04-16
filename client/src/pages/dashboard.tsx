@@ -24,9 +24,12 @@ export default function Dashboard({ stats, wsConnected }: { stats: Stats | null;
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">Command Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Live gear tracking across all units</p>
+        <div className="flex items-center gap-4">
+          <img src="/redline-logo.svg" alt="RedLine" className="h-10 w-auto hidden lg:block" />
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">Command Dashboard</h1>
+            <p className="text-sm text-gray-500 mt-0.5">Live gear tracking across all units</p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <Badge variant="outline" className={`gap-1.5 ${wsConnected ? "text-green-600 border-green-300 bg-green-50" : "text-red-600 border-red-300 bg-red-50"}`}>

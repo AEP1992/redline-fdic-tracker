@@ -43,11 +43,11 @@ function AppContent() {
 
       {/* Sidebar — dark like Salesforce nav */}
       <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-60 bg-[#1B2A4A] text-white flex flex-col transition-transform duration-200 ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
-        <div className="px-5 py-5 border-b border-white/10">
+        <div className="px-5 py-6 border-b border-white/10">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-lg font-extrabold tracking-tight text-red-400">REDLINE</h1>
-              <p className="text-[10px] font-semibold tracking-widest uppercase text-white/40 mt-0.5">FDIC Gear Tracker</p>
+            <div className="flex flex-col items-start gap-3">
+              <img src="/redline-logo-light.svg" alt="RedLine Gear Cleaning" className="h-12 w-auto" />
+              <p className="text-[10px] font-semibold tracking-widest uppercase text-white/40">FDIC Gear Tracker</p>
             </div>
             <button className="lg:hidden text-white/60" onClick={() => setSidebarOpen(false)}><X className="h-5 w-5" /></button>
           </div>
@@ -66,9 +66,9 @@ function AppContent() {
             );
           })}
         </nav>
-        <div className="px-5 py-4 border-t border-white/10">
-          <p className="text-[10px] text-white/25 uppercase tracking-wide">RedLine Gear Cleaning</p>
-          <p className="text-[10px] text-white/15">FDIC 2026</p>
+        <div className="px-5 py-4 border-t border-white/10 flex items-center gap-2">
+          <img src="/redline-logo-light.svg" alt="" className="h-5 w-auto opacity-25" />
+          <p className="text-[10px] text-white/25 uppercase tracking-wide">FDIC 2026</p>
         </div>
       </aside>
 
@@ -76,8 +76,7 @@ function AppContent() {
       <main className="flex-1 overflow-y-auto">
         <div className="lg:hidden sticky top-0 z-30 bg-white border-b shadow-sm px-4 py-3 flex items-center gap-3">
           <button onClick={() => setSidebarOpen(true)} data-testid="button-menu"><Menu className="h-5 w-5 text-gray-600" /></button>
-          <span className="font-extrabold text-red-500 text-sm">REDLINE</span>
-          <span className="text-[10px] text-gray-400 uppercase tracking-widest">FDIC Gear Tracker</span>
+          <img src="/redline-logo.svg" alt="RedLine" className="h-8 w-auto" />
         </div>
         <div className="p-5 lg:p-8 max-w-6xl">
           <Switch>
