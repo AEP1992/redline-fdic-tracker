@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import type { Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
-import { storage } from "./storage";
+import { storage, supabase } from "./storage";
 
 let wss: WebSocketServer;
 
@@ -102,6 +102,18 @@ export async function registerRoutes(httpServer: Server, app: Express) {
     const stats = await storage.getStats();
     broadcast({ type: "stats", data: stats });
     res.json({ updated: count });
+  });
+
+  // Soft delete a bag
+  app.delete("/api/bags/:id", async (req, res) => {
+    const bag = await storage.getBag(Number(req.params.id));
+    if (!bag) return res.status(404).json({ error: "Not found" });
+    const { error } = await supabase.from("bags").update({ deleted: true }).eq("id", bag.id);
+    if (error) return res.status(500).json({ error: error.message });
+    const stats = await storage.getStats();
+    broadcast({ type: "stats", data: stats });
+    broadcast({ type: "bag_deleted", data: { id: bag.id } });
+    res.json({ deleted: true });
   });
 
   // Attendee search

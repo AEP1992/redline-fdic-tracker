@@ -37,7 +37,7 @@ export class SupabaseStorage {
 
   // ── Bags ──
   async getBags(filters?: { truckId?: number; status?: string; search?: string }): Promise<Bag[]> {
-    let query = supabase.from("bags").select("*").order("updated_at", { ascending: false });
+    let query = supabase.from("bags").select("*").eq("deleted", false).order("updated_at", { ascending: false });
     if (filters?.truckId) query = query.eq("truck_id", filters.truckId);
     if (filters?.status) query = query.eq("status", filters.status);
     if (filters?.search) {
@@ -91,7 +91,7 @@ export class SupabaseStorage {
   // ── Stats ──
   async getStats(): Promise<Stats> {
     const [{ data: allBags }, { data: allTrucks }] = await Promise.all([
-      supabase.from("bags").select("*"),
+      supabase.from("bags").select("*").eq("deleted", false),
       supabase.from("trucks").select("*").order("id"),
     ]);
     const bags = allBags || [];

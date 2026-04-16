@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Search, ChevronDown, ChevronUp, Clock, ArrowRight, Loader2, Phone, MapPin, Calendar, Hash, Palette } from "lucide-react";
+import { Search, ChevronDown, ChevronUp, Clock, ArrowRight, Loader2, Phone, MapPin, Calendar, Hash, Palette, Trash2 } from "lucide-react";
 import type { Bag, Truck, StatusLog } from "@shared/schema";
 
 const STATUS_LABELS: Record<string, string> = { checked_in: "Checked In", cleaning: "In Cleaning", complete: "Complete", picked_up: "Picked Up" };
@@ -126,12 +126,23 @@ function BagRow({ bag, truckName, isExpanded, isSelected, onToggleExpand, onTogg
     queryKey: ["/api/bags", bag.id], queryFn: async () => { const r = await apiRequest("GET", `/api/bags/${bag.id}`); return r.json(); }, enabled: isExpanded,
   });
 
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
   const statusMutation = useMutation({
     mutationFn: async (newStatus: string) => { const r = await apiRequest("PATCH", `/api/bags/${bag.id}/status`, { status: newStatus }); return r.json(); },
     onSuccess: (_, newStatus) => {
       toast({ title: "Updated", description: `${bag.last_name} → ${STATUS_LABELS[newStatus]}` });
       queryClient.invalidateQueries({ queryKey: ["/api/bags"] });
       queryClient.invalidateQueries({ queryKey: ["/api/bags", bag.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => { const r = await apiRequest("DELETE", `/api/bags/${bag.id}`); return r.json(); },
+    onSuccess: () => {
+      toast({ title: "Removed", description: `${bag.last_name}, ${bag.first_name} removed` });
+      queryClient.invalidateQueries({ queryKey: ["/api/bags"] });
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
     },
   });
@@ -171,6 +182,23 @@ function BagRow({ bag, truckName, isExpanded, isSelected, onToggleExpand, onTogg
             <span className="text-muted-foreground">MEU: {truckName}</span>
             {bag.load_number && <span className="flex items-center gap-1.5 text-muted-foreground"><Hash className="h-3.5 w-3.5" />Load {bag.load_number}</span>}
             {bag.tag_color && <span className="flex items-center gap-1.5 text-muted-foreground"><Palette className="h-3.5 w-3.5" />{bag.tag_color} tag</span>}
+          </div>
+
+          {/* Remove */}
+          <div className="border-t pt-3 mt-2 flex items-center justify-between">
+            {!confirmDelete ? (
+              <Button size="sm" variant="ghost" className="text-xs text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => setConfirmDelete(true)} data-testid={`btn-remove-${bag.id}`}>
+                <Trash2 className="h-3.5 w-3.5 mr-1" />Remove Entry
+              </Button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-red-600 font-medium">Remove {bag.last_name}, {bag.first_name}?</span>
+                <Button size="sm" variant="destructive" className="text-xs h-7" onClick={() => deleteMutation.mutate()} disabled={deleteMutation.isPending}>
+                  {deleteMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}Yes, Remove
+                </Button>
+                <Button size="sm" variant="ghost" className="text-xs h-7" onClick={() => setConfirmDelete(false)}>Cancel</Button>
+              </div>
+            )}
           </div>
 
           {/* History */}
