@@ -11,6 +11,8 @@ export type Bag = {
   truck_id: number;
   status: string;
   notes: string | null;
+  load_number: string | null;
+  tag_color: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -42,3 +44,7 @@ export const STATUS_LABELS: Record<string, string> = {
 };
 
 export const DAY_OPTIONS = ["Wed", "Thurs", "Fri", "Sat"] as const;
+
+export const LOAD_NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
+
+export const TAG_COLORS = ["Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Teal", "Other"] as const;

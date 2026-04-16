@@ -45,6 +45,10 @@ export async function registerRoutes(httpServer: Server, app: Express) {
   app.post("/api/bags", async (req, res) => {
     try {
       const now = new Date().toISOString();
+      const loadNumber = req.body.loadNumber || null;
+      const tagColor = req.body.tagColor || null;
+      // Auto-set to "cleaning" if load + color are provided
+      const autoStatus = (loadNumber && tagColor) ? "cleaning" : "checked_in";
       const bag = await storage.createBag({
         first_name: req.body.firstName,
         last_name: req.body.lastName,
@@ -52,12 +56,14 @@ export async function registerRoutes(httpServer: Server, app: Express) {
         phone: req.body.phone || null,
         day_leaving: req.body.dayLeaving || null,
         truck_id: Number(req.body.truckId),
-        status: "checked_in",
+        status: autoStatus,
         notes: req.body.notes || null,
+        load_number: loadNumber,
+        tag_color: tagColor,
         created_at: now,
         updated_at: now,
       });
-      await storage.createStatusLog({ bag_id: bag.id, previous_status: null, new_status: "checked_in", timestamp: now });
+      await storage.createStatusLog({ bag_id: bag.id, previous_status: null, new_status: autoStatus, timestamp: now });
       const stats = await storage.getStats();
       broadcast({ type: "stats", data: stats });
       broadcast({ type: "bag_created", data: bag });
@@ -111,10 +117,10 @@ export async function registerRoutes(httpServer: Server, app: Express) {
     const trucks = await storage.getTrucks();
     const truckMap = Object.fromEntries(trucks.map(t => [t.id, t.name]));
     const sl: Record<string, string> = { checked_in: "Checked In", cleaning: "In Cleaning", complete: "Complete", picked_up: "Picked Up" };
-    const headers = ["Last Name", "First Name", "Department", "Phone", "Day Leaving", "MEU", "Status", "Checked In", "Last Updated"];
+    const headers = ["Last Name", "First Name", "Department", "Phone", "Day Leaving", "MEU", "Status", "Load #", "Tag Color", "Checked In", "Last Updated"];
     const rows = allBags.map(b => [
       b.last_name, b.first_name, b.department || "", b.phone || "", b.day_leaving || "",
-      truckMap[b.truck_id] || "", sl[b.status] || b.status, b.created_at, b.updated_at,
+      truckMap[b.truck_id] || "", sl[b.status] || b.status, b.load_number || "", b.tag_color || "", b.created_at, b.updated_at,
     ]);
     const csv = [headers.join(","), ...rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(","))].join("\n");
     res.setHeader("Content-Type", "text/csv");

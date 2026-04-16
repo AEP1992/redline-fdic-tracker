@@ -19,6 +19,8 @@ export default function IntakePage() {
   const [phone, setPhone] = useState("");
   const [department, setDepartment] = useState("");
   const [dayLeaving, setDayLeaving] = useState("");
+  const [loadNumber, setLoadNumber] = useState("");
+  const [tagColor, setTagColor] = useState("");
   const [sessionCount, setSessionCount] = useState(0);
   const [suggestions, setSuggestions] = useState<Attendee[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -57,13 +59,15 @@ export default function IntakePage() {
         firstName: firstName.trim(), lastName: lastName.trim(),
         department: department.trim() || null, phone: phone.trim() || null,
         dayLeaving: dayLeaving || null, truckId: Number(truckId),
+        loadNumber: loadNumber || null, tagColor: tagColor || null,
       });
       return r.json();
     },
     onSuccess: () => {
       setSessionCount(c => c + 1);
-      toast({ title: "Checked in", description: `${firstName} ${lastName} — ${department || "No dept"}` });
-      setFirstName(""); setLastName(""); setPhone(""); setDepartment(""); setDayLeaving("");
+      const statusMsg = (loadNumber && tagColor) ? "Checked in → Cleaning" : "Checked in";
+      toast({ title: statusMsg, description: `${firstName} ${lastName} — ${department || "No dept"}` });
+      setFirstName(""); setLastName(""); setPhone(""); setDepartment(""); setDayLeaving(""); setLoadNumber(""); setTagColor("");
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
       queryClient.invalidateQueries({ queryKey: ["/api/bags"] });
       nameRef.current?.focus();
@@ -146,11 +150,40 @@ export default function IntakePage() {
               <div className="grid grid-cols-4 gap-2 mt-1">
                 {["Wed", "Thurs", "Fri", "Sat"].map(day => (
                   <Button key={day} type="button" variant={dayLeaving === day ? "default" : "outline"}
-                    className={`h-12 text-base font-semibold ${dayLeaving === day ? "" : ""}`}
+                    className={`h-12 text-base font-semibold`}
                     onClick={() => setDayLeaving(dayLeaving === day ? "" : day)}
                     data-testid={`btn-day-${day.toLowerCase()}`}
                   >{day}</Button>
                 ))}
+              </div>
+            </div>
+
+            {/* Load Number + Tag Color (optional — auto-moves to Cleaning if both filled) */}
+            <div className="border-t pt-4 mt-2">
+              <Label className="text-sm font-semibold text-muted-foreground mb-2 block">Cleaning Info (optional — fills in = auto-moves to Cleaning)</Label>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-sm font-medium">Load #</Label>
+                  <Select value={loadNumber} onValueChange={setLoadNumber}>
+                    <SelectTrigger className="h-12 text-base mt-1" data-testid="select-load">
+                      <SelectValue placeholder="Load..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {["1","2","3","4","5","6","7","8","9"].map(n => <SelectItem key={n} value={n}>Load {n}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Tag Color</Label>
+                  <Select value={tagColor} onValueChange={setTagColor}>
+                    <SelectTrigger className="h-12 text-base mt-1" data-testid="select-color">
+                      <SelectValue placeholder="Color..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {["Red","Orange","Yellow","Green","Blue","Purple","Teal","Other"].map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
 

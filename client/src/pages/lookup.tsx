@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Search, ChevronDown, ChevronUp, Clock, ArrowRight, Loader2, Phone, MapPin, Calendar } from "lucide-react";
+import { Search, ChevronDown, ChevronUp, Clock, ArrowRight, Loader2, Phone, MapPin, Calendar, Hash, Palette } from "lucide-react";
 import type { Bag, Truck, StatusLog } from "@shared/schema";
 
 const STATUS_LABELS: Record<string, string> = { checked_in: "Checked In", cleaning: "In Cleaning", complete: "Complete", picked_up: "Picked Up" };
@@ -169,6 +169,8 @@ function BagRow({ bag, truckName, isExpanded, isSelected, onToggleExpand, onTogg
             {bag.department && <span className="flex items-center gap-1.5 text-muted-foreground"><MapPin className="h-3.5 w-3.5" />{bag.department}</span>}
             {bag.day_leaving && <span className="flex items-center gap-1.5 text-muted-foreground"><Calendar className="h-3.5 w-3.5" />Leaving {bag.day_leaving}</span>}
             <span className="text-muted-foreground">MEU: {truckName}</span>
+            {bag.load_number && <span className="flex items-center gap-1.5 text-muted-foreground"><Hash className="h-3.5 w-3.5" />Load {bag.load_number}</span>}
+            {bag.tag_color && <span className="flex items-center gap-1.5 text-muted-foreground"><Palette className="h-3.5 w-3.5" />{bag.tag_color} tag</span>}
           </div>
 
           {/* History */}
