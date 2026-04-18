@@ -13,6 +13,7 @@ export type Bag = {
   notes: string | null;
   load_number: string | null;
   tag_color: string | null;
+  notified_at: string | null;
   created_at: string;
   updated_at: string;
 };

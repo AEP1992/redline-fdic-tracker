@@ -104,6 +104,16 @@ export async function registerRoutes(httpServer: Server, app: Express) {
     res.json({ updated: count });
   });
 
+  // Mark as notified
+  app.patch("/api/bags/:id/notify", async (req, res) => {
+    const bag = await storage.getBag(Number(req.params.id));
+    if (!bag) return res.status(404).json({ error: "Not found" });
+    const { data, error } = await supabase.from("bags").update({ notified_at: new Date().toISOString() }).eq("id", bag.id).select().single();
+    if (error) return res.status(500).json({ error: error.message });
+    broadcast({ type: "bag_updated", data });
+    res.json(data);
+  });
+
   // Soft delete a bag
   app.delete("/api/bags/:id", async (req, res) => {
     const bag = await storage.getBag(Number(req.params.id));
