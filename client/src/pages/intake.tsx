@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { ClipboardCheck, CheckCircle, Loader2 } from "lucide-react";
+import { HelpDialog } from "@/components/help-dialog";
 import type { Truck, Attendee } from "@shared/schema";
 
 export default function IntakePage() {
@@ -81,9 +82,21 @@ export default function IntakePage() {
     <div className="max-w-lg mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">Check In Gear</h1>
-        <Badge variant="outline" className="gap-1.5 text-sm px-3 py-1">
-          <ClipboardCheck className="h-3.5 w-3.5" />{sessionCount} checked in
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="gap-1.5 text-sm px-3 h-10 flex items-center">
+            <ClipboardCheck className="h-3.5 w-3.5" />{sessionCount} checked in
+          </Badge>
+          <HelpDialog pageKey="checkin" title="Check In Gear" lines={[
+            "Select your MEU truck from the dropdown at the top.",
+            "Type the firefighter's LAST NAME — matching names will pop up automatically.",
+            "Tap the match to auto-fill name, phone, and department.",
+            "Tap their Day Leaving from the tag (Wed, Thurs, Fri, Sat).",
+            "If the gear is going straight to a wash, select Load # and Tag Color — it will auto-move to In Cleaning.",
+            "If it's just being stored, leave Load and Color blank.",
+            "Tap Check In. Form resets. Next bag.",
+            "If someone's name isn't in the system, just type it manually."
+          ]} />
+        </div>
       </div>
 
       {/* Select truck */}
@@ -91,7 +104,7 @@ export default function IntakePage() {
         <CardContent className="pt-4 pb-4">
           <Label className="text-sm font-semibold mb-2 block">Assign to MEU</Label>
           <Select value={truckId} onValueChange={setTruckId}>
-            <SelectTrigger className="h-12 text-base" data-testid="select-truck">
+            <SelectTrigger className="h-14 text-base" data-testid="select-truck">
               <SelectValue placeholder="Choose truck..." />
             </SelectTrigger>
             <SelectContent>
@@ -111,12 +124,12 @@ export default function IntakePage() {
               <Input ref={nameRef} value={lastName}
                 onChange={e => { setLastName(e.target.value); searchAttendees(e.target.value); }}
                 placeholder="Type last name..."
-                className="h-14 text-lg font-semibold mt-1" data-testid="input-last-name"
+                className="h-16 text-lg font-semibold mt-1" data-testid="input-last-name"
               />
               {showSuggestions && suggestions.length > 0 && (
                 <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-popover border border-popover-border rounded-md shadow-lg max-h-52 overflow-y-auto">
                   {suggestions.map(a => (
-                    <button key={a.id} className="w-full text-left px-3 py-3 hover:bg-accent text-sm border-b border-border last:border-0" onClick={() => selectSuggestion(a)} data-testid={`suggestion-${a.id}`}>
+                    <button key={a.id} className="w-full text-left px-4 py-4 hover:bg-accent text-sm border-b border-border last:border-0" onClick={() => selectSuggestion(a)} data-testid={`suggestion-${a.id}`}>
                       <span className="font-semibold">{a.last_name}, {a.first_name}</span>
                       {a.department && <span className="text-muted-foreground ml-2 text-xs">— {a.department}</span>}
                       {a.phone && <span className="text-muted-foreground ml-2 text-xs">{a.phone}</span>}
@@ -129,18 +142,18 @@ export default function IntakePage() {
             {/* First Name */}
             <div>
               <Label className="text-sm font-medium">First Name *</Label>
-              <Input value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="First name" className="h-12 text-base mt-1" data-testid="input-first-name" />
+              <Input value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="First name" className="h-14 text-base mt-1" data-testid="input-first-name" />
             </div>
 
             {/* Phone + Department — auto-filled */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-sm font-medium">Phone *</Label>
-                <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone" className="h-12 text-base mt-1" type="tel" data-testid="input-phone" />
+                <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone" className="h-14 text-base mt-1" type="tel" data-testid="input-phone" />
               </div>
               <div>
                 <Label className="text-sm font-medium">Department *</Label>
-                <Input value={department} onChange={e => setDepartment(e.target.value)} placeholder="Department" className="h-12 text-base mt-1" data-testid="input-department" />
+                <Input value={department} onChange={e => setDepartment(e.target.value)} placeholder="Department" className="h-14 text-base mt-1" data-testid="input-department" />
               </div>
             </div>
 
@@ -150,7 +163,7 @@ export default function IntakePage() {
               <div className="grid grid-cols-4 gap-2 mt-1">
                 {["Wed", "Thurs", "Fri", "Sat"].map(day => (
                   <Button key={day} type="button" variant={dayLeaving === day ? "default" : "outline"}
-                    className={`h-12 text-base font-semibold`}
+                    className={`h-14 text-base font-semibold`}
                     onClick={() => setDayLeaving(dayLeaving === day ? "" : day)}
                     data-testid={`btn-day-${day.toLowerCase()}`}
                   >{day}</Button>
@@ -165,7 +178,7 @@ export default function IntakePage() {
                 <div>
                   <Label className="text-sm font-medium">Load #</Label>
                   <Select value={loadNumber} onValueChange={setLoadNumber}>
-                    <SelectTrigger className="h-12 text-base mt-1" data-testid="select-load">
+                    <SelectTrigger className="h-14 text-base mt-1" data-testid="select-load">
                       <SelectValue placeholder="Load..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -176,7 +189,7 @@ export default function IntakePage() {
                 <div>
                   <Label className="text-sm font-medium">Tag Color</Label>
                   <Select value={tagColor} onValueChange={setTagColor}>
-                    <SelectTrigger className="h-12 text-base mt-1" data-testid="select-color">
+                    <SelectTrigger className="h-14 text-base mt-1" data-testid="select-color">
                       <SelectValue placeholder="Color..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -189,7 +202,7 @@ export default function IntakePage() {
 
             {/* Submit */}
             <Button onClick={() => submitMutation.mutate()} disabled={!canSubmit || submitMutation.isPending}
-              className="w-full h-14 text-lg font-semibold" data-testid="button-check-in"
+              className="w-full h-16 text-lg font-semibold" data-testid="button-check-in"
             >
               {submitMutation.isPending ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <CheckCircle className="h-5 w-5 mr-2" />}
               Check In

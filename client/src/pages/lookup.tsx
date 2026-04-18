@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Search, ChevronDown, ChevronUp, Clock, ArrowRight, Loader2, Phone, MapPin, Calendar, Hash, Palette, Trash2 } from "lucide-react";
+import { HelpDialog } from "@/components/help-dialog";
 import type { Bag, Truck, StatusLog } from "@shared/schema";
 
 const STATUS_LABELS: Record<string, string> = { checked_in: "Checked In", cleaning: "In Cleaning", complete: "Complete", picked_up: "Picked Up" };
@@ -57,7 +58,17 @@ export default function LookupPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold">Gear Lookup</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold">Gear Lookup</h1>
+        <HelpDialog pageKey="lookup" title="Gear Lookup" lines={[
+          "Search by last name, first name, or department in the search bar.",
+          "Use the status dropdown to filter (Checked In, In Cleaning, Complete, Picked Up).",
+          "Tap any row to expand it and see full details.",
+          "Tap a status button to move gear to the next stage.",
+          "Use checkboxes to select multiple bags, then bulk update them all at once.",
+          "Tap Remove Entry at the bottom of an expanded row to undo a mistake."
+        ]} />
+      </div>
 
       {/* Search */}
       <div className="flex gap-2">
@@ -168,7 +179,7 @@ function BagRow({ bag, truckName, isExpanded, isSelected, onToggleExpand, onTogg
               {STATUSES.map(s => (
                 <Button key={s} size="sm" variant={bag.status === s ? "default" : "outline"}
                   onClick={() => statusMutation.mutate(s)} disabled={statusMutation.isPending || bag.status === s}
-                  className={`text-xs ${bag.status === s ? "" : STATUS_STYLES[s]}`} data-testid={`btn-status-${s}-${bag.id}`}
+                  className={`text-sm h-10 px-4 ${bag.status === s ? "" : STATUS_STYLES[s]}`} data-testid={`btn-status-${s}-${bag.id}`}
                 >{STATUS_LABELS[s]}</Button>
               ))}
             </div>

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Phone, MessageSquare, CheckCircle, Search, MapPin, Calendar, Hash, Palette, Truck, Bell, BellOff } from "lucide-react";
+import { HelpDialog } from "@/components/help-dialog";
 import type { Bag, Truck as TruckType } from "@shared/schema";
 
 export default function ReadyPage() {
@@ -49,15 +50,24 @@ export default function ReadyPage() {
           <h1 className="text-xl font-bold text-gray-900">Ready for Pickup</h1>
           <p className="text-sm text-gray-500 mt-0.5">Gear that's cleaned — contact these people</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           {notNotified > 0 && (
             <Badge variant="outline" className="text-sm px-3 py-1.5 bg-amber-50 text-amber-700 border-amber-200 font-bold">
               {notNotified} to text
             </Badge>
           )}
-          <Badge variant="outline" className="text-sm px-3 py-1.5 bg-green-50 text-green-700 border-green-200 font-bold">
+          <Badge variant="outline" className="text-sm px-3 h-10 flex items-center bg-green-50 text-green-700 border-green-200 font-bold">
             {count} ready
           </Badge>
+          <HelpDialog pageKey="ready" title="Ready for Pickup" lines={[
+            "This page shows all gear that's been cleaned and is ready for pickup.",
+            "Tap the blue phone number box to open a text message to that person.",
+            "After you text them, tap 'Mark as Notified' so the team knows they've been contacted.",
+            "Notified cards dim so you can see who still needs texting.",
+            "People who haven't been notified are always at the top.",
+            "When the firefighter picks up their gear, tap 'Picked Up' to complete it.",
+            "If there's no phone number, you'll see a red warning — skip the notify and just mark Picked Up when they arrive."
+          ]} />
         </div>
       </div>
 
@@ -161,18 +171,18 @@ function ReadyCard({ bag, truckMap }: { bag: Bag; truckMap: Record<number, strin
         {/* Actions */}
         <div className="flex gap-2">
           {bag.phone && !isNotified && (
-            <Button variant="outline" className="flex-1 h-11 text-sm font-semibold bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100"
+            <Button variant="outline" className="flex-1 h-14 text-base font-semibold bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100"
               onClick={() => notifyMutation.mutate()} disabled={notifyMutation.isPending} data-testid={`btn-notify-${bag.id}`}
             >
               <Bell className="h-4 w-4 mr-2" />Mark as Notified
             </Button>
           )}
           {isNotified && (
-            <Button variant="outline" className="flex-1 h-11 text-sm font-semibold bg-green-50 border-green-200 text-green-600" disabled>
+            <Button variant="outline" className="flex-1 h-14 text-base font-semibold bg-green-50 border-green-200 text-green-600" disabled>
               <CheckCircle className="h-4 w-4 mr-2" />Notified ✓
             </Button>
           )}
-          <Button variant="outline" className="flex-1 h-11 text-sm font-semibold border-gray-300 hover:bg-gray-50"
+          <Button variant="outline" className="flex-1 h-14 text-base font-semibold border-gray-300 hover:bg-gray-50"
             onClick={() => pickupMutation.mutate()} disabled={pickupMutation.isPending} data-testid={`btn-pickup-${bag.id}`}
           >
             <CheckCircle className="h-4 w-4 mr-2" />Picked Up

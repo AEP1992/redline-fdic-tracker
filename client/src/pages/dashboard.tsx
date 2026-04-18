@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Download, ClipboardCheck, Sparkles, PackageCheck, UserCheck, Package, Wifi, WifiOff } from "lucide-react";
+import { HelpDialog } from "@/components/help-dialog";
 import { useLocation } from "wouter";
 
 type TruckStats = { truckId: number; truckName: string; total: number; checkedIn: number; cleaning: number; complete: number; pickedUp: number };
@@ -32,13 +33,21 @@ export default function Dashboard({ stats, wsConnected }: { stats: Stats | null;
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Badge variant="outline" className={`gap-1.5 ${wsConnected ? "text-green-600 border-green-300 bg-green-50" : "text-red-600 border-red-300 bg-red-50"}`}>
+          <Badge variant="outline" className={`gap-1.5 h-10 px-3 text-sm ${wsConnected ? "text-green-600 border-green-300 bg-green-50" : "text-red-600 border-red-300 bg-red-50"}`}>
             {wsConnected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
             {wsConnected ? "Live" : "Offline"}
           </Badge>
-          <Button variant="outline" size="sm" onClick={() => window.open("/api/export/csv", "_blank")} data-testid="button-export">
+          <Button variant="outline" size="sm" className="h-10 px-4 text-sm" onClick={() => window.open("/api/export/csv", "_blank")} data-testid="button-export">
             <Download className="h-4 w-4 mr-1.5" />Export
           </Button>
+          <HelpDialog pageKey="dashboard" title="Command Dashboard" lines={[
+            "This is the live overview of the entire gear cleaning operation.",
+            "The top row shows total bags and how many are in each status.",
+            "The progress bar shows overall completion percentage.",
+            "Each MEU card shows that truck's workload — tap a card to see its full list.",
+            "Everything updates in real-time. No need to refresh.",
+            "Tap Export to download all data as a spreadsheet."
+          ]} />
         </div>
       </div>
 
