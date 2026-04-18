@@ -5,11 +5,12 @@ import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { useState, useCallback, useEffect } from "react";
 import { useWebSocket } from "./hooks/use-websocket";
-import { LayoutDashboard, ClipboardCheck, Search, Menu, X } from "lucide-react";
+import { LayoutDashboard, ClipboardCheck, Search, Phone, Menu, X } from "lucide-react";
 
 import Dashboard from "./pages/dashboard";
 import IntakePage from "./pages/intake";
 import LookupPage from "./pages/lookup";
+import ReadyPage from "./pages/ready";
 import TruckDetailPage from "./pages/truck-detail";
 import NotFound from "./pages/not-found";
 
@@ -35,6 +36,7 @@ function AppContent() {
     { path: "/", label: "Dashboard", icon: LayoutDashboard },
     { path: "/check-in", label: "Check In", icon: ClipboardCheck },
     { path: "/lookup", label: "Lookup", icon: Search },
+    { path: "/ready", label: "Ready for Pickup", icon: Phone },
   ];
 
   return (
@@ -83,6 +85,7 @@ function AppContent() {
             <Route path="/"><Dashboard stats={stats} wsConnected={connected} /></Route>
             <Route path="/check-in"><IntakePage /></Route>
             <Route path="/lookup"><LookupPage /></Route>
+            <Route path="/ready"><ReadyPage /></Route>
             <Route path="/trucks/:id">{params => <TruckDetailPage truckId={Number(params.id)} />}</Route>
             <Route component={NotFound} />
           </Switch>
