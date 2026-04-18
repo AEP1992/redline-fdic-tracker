@@ -47,7 +47,10 @@ export default function ReadyPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Ready for Pickup</h1>
+          <div className="flex items-center gap-3">
+            <img src="/redline-logo.svg" alt="RedLine" className="h-10 w-auto hidden lg:block" />
+            <h1 className="text-xl font-bold text-gray-900">Ready for Pickup</h1>
+          </div>
           <p className="text-sm text-gray-500 mt-0.5">Gear that's cleaned — contact these people</p>
         </div>
         <div className="flex gap-2 items-center">

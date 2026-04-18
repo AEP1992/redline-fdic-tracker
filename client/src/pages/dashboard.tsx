@@ -26,7 +26,7 @@ export default function Dashboard({ stats, wsConnected }: { stats: Stats | null;
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <img src="/redline-logo.svg" alt="RedLine" className="h-10 w-auto hidden lg:block" />
+          <img src="/redline-logo.svg" alt="RedLine" className="h-14 w-auto hidden lg:block" />
           <div>
             <h1 className="text-xl font-bold text-gray-900">Command Dashboard</h1>
             <p className="text-sm text-gray-500 mt-0.5">Live gear tracking across all units</p>

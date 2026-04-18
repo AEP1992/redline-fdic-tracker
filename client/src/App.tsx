@@ -48,7 +48,7 @@ function AppContent() {
         <div className="px-5 py-6 border-b border-white/10">
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-start gap-3">
-              <img src="/redline-logo-light.svg" alt="RedLine Gear Cleaning" className="h-12 w-auto" />
+              <img src="/redline-logo-light.svg" alt="RedLine Gear Cleaning" className="h-16 w-auto" />
               <p className="text-[10px] font-semibold tracking-widest uppercase text-white/40">FDIC Gear Tracker</p>
             </div>
             <button className="lg:hidden text-white/60" onClick={() => setSidebarOpen(false)}><X className="h-5 w-5" /></button>
@@ -78,7 +78,7 @@ function AppContent() {
       <main className="flex-1 overflow-y-auto">
         <div className="lg:hidden sticky top-0 z-30 bg-white border-b shadow-sm px-4 py-3 flex items-center gap-3">
           <button onClick={() => setSidebarOpen(true)} data-testid="button-menu"><Menu className="h-5 w-5 text-gray-600" /></button>
-          <img src="/redline-logo.svg" alt="RedLine" className="h-8 w-auto" />
+          <img src="/redline-logo.svg" alt="RedLine" className="h-10 w-auto" />
         </div>
         <div className="p-5 lg:p-8 max-w-6xl">
           <Switch>

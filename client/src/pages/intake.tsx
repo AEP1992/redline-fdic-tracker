@@ -81,7 +81,10 @@ export default function IntakePage() {
   return (
     <div className="max-w-lg mx-auto space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">Check In Gear</h1>
+        <div className="flex items-center gap-3">
+          <img src="/redline-logo.svg" alt="RedLine" className="h-10 w-auto hidden lg:block" />
+          <h1 className="text-xl font-bold">Check In Gear</h1>
+        </div>
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="gap-1.5 text-sm px-3 h-10 flex items-center">
             <ClipboardCheck className="h-3.5 w-3.5" />{sessionCount} checked in

@@ -59,7 +59,10 @@ export default function LookupPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">Gear Lookup</h1>
+        <div className="flex items-center gap-3">
+          <img src="/redline-logo.svg" alt="RedLine" className="h-10 w-auto hidden lg:block" />
+          <h1 className="text-xl font-bold">Gear Lookup</h1>
+        </div>
         <HelpDialog pageKey="lookup" title="Gear Lookup" lines={[
           "Search by last name, first name, or department in the search bar.",
           "Use the status dropdown to filter (Checked In, In Cleaning, Complete, Picked Up).",
