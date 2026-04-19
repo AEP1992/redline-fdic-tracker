@@ -55,11 +55,11 @@ export default function ReadyPage() {
         </div>
         <div className="flex gap-2 items-center">
           {notNotified > 0 && (
-            <Badge variant="outline" className="text-sm px-3 py-1.5 bg-amber-50 text-amber-700 border-amber-200 font-bold">
+            <Badge variant="outline" className="text-sm px-3 py-1.5 bg-red-100 text-red-600 border-red-200 font-bold">
               {notNotified} to text
             </Badge>
           )}
-          <Badge variant="outline" className="text-sm px-3 h-10 flex items-center bg-green-50 text-green-700 border-green-200 font-bold">
+          <Badge variant="outline" className="text-sm px-3 h-10 flex items-center bg-red-50 text-red-700 border-red-200 font-bold">
             {count} ready
           </Badge>
           <HelpDialog pageKey="ready" title="Ready for Pickup" lines={[
@@ -125,7 +125,7 @@ function ReadyCard({ bag, truckMap }: { bag: Bag; truckMap: Record<number, strin
             <h2 className="text-xl font-bold text-gray-900">
               {bag.last_name}, {bag.first_name}
               {isNotified && (
-                <span className="inline-flex items-center gap-1 ml-2 bg-green-50 border border-green-200 text-green-600 text-xs font-semibold px-2 py-0.5 rounded-full align-middle">
+                <span className="inline-flex items-center gap-1 ml-2 bg-gray-900 border border-gray-900 text-white text-xs font-semibold px-2 py-0.5 rounded-full align-middle">
                   <CheckCircle className="h-3 w-3" />Notified
                 </span>
               )}
@@ -136,7 +136,7 @@ function ReadyCard({ bag, truckMap }: { bag: Bag; truckMap: Record<number, strin
               </p>
             )}
           </div>
-          <Badge className="bg-green-100 text-green-700 border-green-200">Complete</Badge>
+          <Badge className="bg-gray-900 text-white border-gray-900">Complete</Badge>
         </div>
 
         {/* Contact Info */}
@@ -198,7 +198,7 @@ function ReadyCard({ bag, truckMap }: { bag: Bag; truckMap: Record<number, strin
             </Button>
           )}
           {isNotified && (
-            <Button variant="outline" className="flex-1 h-14 text-base font-semibold bg-green-50 border-green-200 text-green-600" disabled>
+            <Button variant="outline" className="flex-1 h-14 text-base font-semibold bg-gray-900 border-gray-900 text-white" disabled>
               <CheckCircle className="h-4 w-4 mr-2" />Notified ✓
             </Button>
           )}

@@ -14,10 +14,10 @@ type Stats = { total: number; checkedIn: number; cleaning: number; complete: num
 // SVG Donut Chart
 function DonutChart({ stats }: { stats: Stats }) {
   const segments = [
-    { label: "Checked In", value: stats.checkedIn, color: "#f59e0b" },
-    { label: "In Cleaning", value: stats.cleaning, color: "#3b82f6" },
-    { label: "Complete", value: stats.complete, color: "#22c55e" },
-    { label: "Picked Up", value: stats.pickedUp, color: "#9ca3af" },
+    { label: "Checked In", value: stats.checkedIn, color: "#fca5a5" },
+    { label: "In Cleaning", value: stats.cleaning, color: "#ef4444" },
+    { label: "Complete", value: stats.complete, color: "#1a1a1a" },
+    { label: "Picked Up", value: stats.pickedUp, color: "#d1d5db" },
   ];
   const total = stats.total || 1;
   const r = 80, cx = 100, cy = 100, circumference = 2 * Math.PI * r;
@@ -82,7 +82,7 @@ function MEUProgressBars({ trucks }: { trucks: TruckStats[] }) {
 // Recent activity feed
 function ActivityFeed({ bags }: { bags: Bag[] }) {
   const statusColors: Record<string, string> = {
-    checked_in: "#f59e0b", cleaning: "#3b82f6", complete: "#22c55e", picked_up: "#9ca3af",
+    checked_in: "#fca5a5", cleaning: "#ef4444", complete: "#1a1a1a", picked_up: "#d1d5db",
   };
   const statusLabels: Record<string, string> = {
     checked_in: "Checked In", cleaning: "In Cleaning", complete: "Complete", picked_up: "Picked Up",
@@ -140,7 +140,7 @@ export default function Dashboard({ stats, wsConnected }: { stats: Stats | null;
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Badge variant="outline" className={`gap-1.5 h-10 px-3 text-sm ${wsConnected ? "text-green-600 border-green-300 bg-green-50" : "text-red-600 border-red-300 bg-red-50"}`}>
+          <Badge variant="outline" className={`gap-1.5 h-10 px-3 text-sm ${wsConnected ? "text-red-600 border-red-300 bg-red-50" : "text-red-600 border-red-300 bg-red-50"}`}>
             {wsConnected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
             {wsConnected ? "Live" : "Offline"}
           </Badge>
@@ -163,10 +163,10 @@ export default function Dashboard({ stats, wsConnected }: { stats: Stats | null;
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <KPI label="Total Bags" sublabel={`Across ${s.byTruck.length} MEUs`} value={s.total} icon={<Package className="h-5 w-5" />} color="text-gray-700" iconBg="bg-gray-100" />
-        <KPI label="Checked In" sublabel={s.total > 0 ? `${Math.round(s.checkedIn/s.total*100)}% of total` : ""} value={s.checkedIn} icon={<ClipboardCheck className="h-5 w-5" />} color="text-amber-700" iconBg="bg-amber-50" />
-        <KPI label="In Cleaning" sublabel={s.total > 0 ? `${Math.round(s.cleaning/s.total*100)}% of total` : ""} value={s.cleaning} icon={<Sparkles className="h-5 w-5" />} color="text-blue-700" iconBg="bg-blue-50" />
-        <KPI label="Complete" sublabel={s.total > 0 ? `${Math.round(s.complete/s.total*100)}% of total` : ""} value={s.complete} icon={<PackageCheck className="h-5 w-5" />} color="text-green-700" iconBg="bg-green-50" />
-        <KPI label="Picked Up" sublabel={s.total > 0 ? `${Math.round(s.pickedUp/s.total*100)}% of total` : ""} value={s.pickedUp} icon={<UserCheck className="h-5 w-5" />} color="text-gray-500" iconBg="bg-gray-100" />
+        <KPI label="Checked In" sublabel={s.total > 0 ? `${Math.round(s.checkedIn/s.total*100)}% of total` : ""} value={s.checkedIn} icon={<ClipboardCheck className="h-5 w-5" />} color="text-red-700" iconBg="bg-red-50" />
+        <KPI label="In Cleaning" sublabel={s.total > 0 ? `${Math.round(s.cleaning/s.total*100)}% of total` : ""} value={s.cleaning} icon={<Sparkles className="h-5 w-5" />} color="text-red-600" iconBg="bg-red-100" />
+        <KPI label="Complete" sublabel={s.total > 0 ? `${Math.round(s.complete/s.total*100)}% of total` : ""} value={s.complete} icon={<PackageCheck className="h-5 w-5" />} color="text-gray-900" iconBg="bg-gray-200" />
+        <KPI label="Picked Up" sublabel={s.total > 0 ? `${Math.round(s.pickedUp/s.total*100)}% of total` : ""} value={s.pickedUp} icon={<UserCheck className="h-5 w-5" />} color="text-gray-400" iconBg="bg-gray-100" />
       </div>
 
       {/* Charts Row */}
@@ -211,9 +211,9 @@ export default function Dashboard({ stats, wsConnected }: { stats: Stats | null;
               <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
             </div>
             <div className="flex gap-4 text-sm">
-              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400" />Checked In <b>{s.checkedIn}</b></span>
-              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-500" />Cleaning <b>{s.cleaning}</b></span>
-              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-green-500" />Complete <b>{s.complete}</b></span>
+              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-300" />Checked In <b>{s.checkedIn}</b></span>
+              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-500" />Cleaning <b>{s.cleaning}</b></span>
+              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-gray-900" />Complete <b>{s.complete}</b></span>
               <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-gray-400" />Picked Up <b>{s.pickedUp}</b></span>
             </div>
           </CardContent>
@@ -243,9 +243,9 @@ export default function Dashboard({ stats, wsConnected }: { stats: Stats | null;
                   </div>
                   <div className="grid grid-cols-4 gap-1 text-center">
                     <Mini label="Checked" value={t.checkedIn} color="text-amber-600" />
-                    <Mini label="Cleaning" value={t.cleaning} color="text-blue-600" />
-                    <Mini label="Complete" value={t.complete} color="text-green-600" />
-                    <Mini label="Picked Up" value={t.pickedUp} color="text-gray-400" />
+                    <Mini label="Cleaning" value={t.cleaning} color="text-red-600" />
+                    <Mini label="Complete" value={t.complete} color="text-gray-900" />
+                    <Mini label="Picked Up" value={t.pickedUp} color="text-gray-300" />
                   </div>
                 </CardContent>
               </Card>

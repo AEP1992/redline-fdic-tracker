@@ -14,10 +14,10 @@ import type { Bag, Truck, StatusLog } from "@shared/schema";
 const STATUS_LABELS: Record<string, string> = { checked_in: "Checked In", cleaning: "In Cleaning", complete: "Complete", picked_up: "Picked Up" };
 const STATUSES = ["checked_in", "cleaning", "complete", "picked_up"] as const;
 const STATUS_STYLES: Record<string, string> = {
-  checked_in: "bg-amber-50 text-amber-700 border-amber-200",
-  cleaning: "bg-blue-50 text-blue-700 border-blue-200",
-  complete: "bg-green-50 text-green-700 border-green-200",
-  picked_up: "bg-gray-50 text-gray-500 border-gray-200",
+  checked_in: "bg-red-50 text-red-700 border-red-200",
+  cleaning: "bg-red-500 text-white border-red-500",
+  complete: "bg-gray-900 text-white border-gray-900",
+  picked_up: "bg-gray-100 text-gray-400 border-gray-200",
 };
 
 export default function TruckDetailPage({ truckId }: { truckId: number }) {
@@ -57,9 +57,9 @@ export default function TruckDetailPage({ truckId }: { truckId: number }) {
           </div>
           <Progress value={pct} className="h-3" />
           <div className="grid grid-cols-4 gap-2 mt-3 text-center">
-            <div><div className="text-lg font-bold text-amber-600 tabular-nums">{allBags?.filter(b => b.status === "checked_in").length || 0}</div><div className="text-[10px] text-muted-foreground">Checked In</div></div>
-            <div><div className="text-lg font-bold text-blue-600 tabular-nums">{allBags?.filter(b => b.status === "cleaning").length || 0}</div><div className="text-[10px] text-muted-foreground">Cleaning</div></div>
-            <div><div className="text-lg font-bold text-green-600 tabular-nums">{allBags?.filter(b => b.status === "complete").length || 0}</div><div className="text-[10px] text-muted-foreground">Complete</div></div>
+            <div><div className="text-lg font-bold text-red-400 tabular-nums">{allBags?.filter(b => b.status === "checked_in").length || 0}</div><div className="text-[10px] text-muted-foreground">Checked In</div></div>
+            <div><div className="text-lg font-bold text-red-600 tabular-nums">{allBags?.filter(b => b.status === "cleaning").length || 0}</div><div className="text-[10px] text-muted-foreground">Cleaning</div></div>
+            <div><div className="text-lg font-bold text-gray-900 tabular-nums">{allBags?.filter(b => b.status === "complete").length || 0}</div><div className="text-[10px] text-muted-foreground">Complete</div></div>
             <div><div className="text-lg font-bold text-gray-400 tabular-nums">{allBags?.filter(b => b.status === "picked_up").length || 0}</div><div className="text-[10px] text-muted-foreground">Picked Up</div></div>
           </div>
         </CardContent>
