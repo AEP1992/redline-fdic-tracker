@@ -23,6 +23,7 @@ export default function IntakePage() {
   const [email, setEmail] = useState("");
   const [loadNumber, setLoadNumber] = useState("");
   const [tagColor, setTagColor] = useState("");
+  const [notes, setNotes] = useState("");
   const [sessionCount, setSessionCount] = useState(0);
   const [suggestions, setSuggestions] = useState<Attendee[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -62,7 +63,7 @@ export default function IntakePage() {
         firstName: firstName.trim(), lastName: lastName.trim(),
         department: department.trim() || null, phone: phone.trim() || null,
         dayLeaving: dayLeaving || null, truckId: Number(truckId),
-        email: email.trim() || null, loadNumber: loadNumber || null, tagColor: tagColor || null,
+        email: email.trim() || null, loadNumber: loadNumber || null, tagColor: tagColor || null, notes: notes.trim() || null,
       });
       return r.json();
     },
@@ -70,7 +71,7 @@ export default function IntakePage() {
       setSessionCount(c => c + 1);
       const statusMsg = (loadNumber && tagColor) ? "Checked in → Cleaning" : "Checked in";
       toast({ title: statusMsg, description: `${firstName} ${lastName} — ${department || "No dept"}` });
-      setFirstName(""); setLastName(""); setPhone(""); setDepartment(""); setDayLeaving(""); setEmail(""); setLoadNumber(""); setTagColor("");
+      setFirstName(""); setLastName(""); setPhone(""); setDepartment(""); setDayLeaving(""); setEmail(""); setLoadNumber(""); setTagColor(""); setNotes("");
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
       queryClient.invalidateQueries({ queryKey: ["/api/bags"] });
       nameRef.current?.focus();
@@ -209,6 +210,12 @@ export default function IntakePage() {
                   </Select>
                 </div>
               </div>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <Label className="text-sm font-medium">Notes</Label>
+              <Input value={notes} onChange={e => setNotes(e.target.value)} placeholder="Optional notes about this gear..." className="h-14 text-base mt-1" data-testid="input-notes" />
             </div>
 
             {/* Submit */}
