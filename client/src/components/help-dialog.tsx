@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { HelpCircle } from "lucide-react";
@@ -11,15 +11,6 @@ interface HelpDialogProps {
 
 export function HelpDialog({ pageKey, title, lines }: HelpDialogProps) {
   const [open, setOpen] = useState(false);
-  const [hasShown, setHasShown] = useState(false);
-
-  // Show on first visit to this page per session
-  useEffect(() => {
-    if (!hasShown) {
-      setOpen(true);
-      setHasShown(true);
-    }
-  }, []);
 
   return (
     <>
