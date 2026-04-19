@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Search, ChevronDown, ChevronUp, Clock, ArrowRight, Loader2, Phone, MapPin, Calendar, Hash, Palette, Trash2, Mail } from "lucide-react";
+import { Search, ChevronDown, ChevronUp, Clock, ArrowRight, Loader2, Phone, MapPin, Calendar, Hash, Palette, Trash2, Mail, Save, StickyNote } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { HelpDialog } from "@/components/help-dialog";
 import type { Bag, Truck, StatusLog } from "@shared/schema";
 
@@ -141,6 +142,18 @@ function BagRow({ bag, truckName, isExpanded, isSelected, onToggleExpand, onTogg
   });
 
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [editNotes, setEditNotes] = useState(bag.notes || "");
+  const [notesChanged, setNotesChanged] = useState(false);
+
+  const notesMutation = useMutation({
+    mutationFn: async () => { const r = await apiRequest("PATCH", `/api/bags/${bag.id}/notes`, { notes: editNotes }); return r.json(); },
+    onSuccess: () => {
+      toast({ title: "Notes saved", description: `${bag.last_name}` });
+      setNotesChanged(false);
+      queryClient.invalidateQueries({ queryKey: ["/api/bags"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/bags", bag.id] });
+    },
+  });
 
   const statusMutation = useMutation({
     mutationFn: async (newStatus: string) => { const r = await apiRequest("PATCH", `/api/bags/${bag.id}/status`, { status: newStatus }); return r.json(); },
@@ -197,6 +210,24 @@ function BagRow({ bag, truckName, isExpanded, isSelected, onToggleExpand, onTogg
             {bag.load_number && <span className="flex items-center gap-1.5 text-muted-foreground"><Hash className="h-3.5 w-3.5" />Load {bag.load_number}</span>}
             {bag.tag_color && <span className="flex items-center gap-1.5 text-muted-foreground"><Palette className="h-3.5 w-3.5" />{bag.tag_color} tag</span>}
             {bag.email && <span className="flex items-center gap-1.5 text-muted-foreground"><Mail className="h-3.5 w-3.5" />{bag.email}</span>}
+          </div>
+
+          {/* Notes */}
+          <div>
+            <span className="text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-1.5"><StickyNote className="h-3.5 w-3.5" />Notes</span>
+            <Textarea
+              value={editNotes}
+              onChange={e => { setEditNotes(e.target.value); setNotesChanged(true); }}
+              placeholder="Add notes about this gear (damage, special instructions, etc.)..."
+              className="min-h-[60px] text-sm mt-1"
+              data-testid={`notes-${bag.id}`}
+            />
+            {notesChanged && (
+              <Button size="sm" className="mt-2 h-10 px-4 text-sm" onClick={() => notesMutation.mutate()} disabled={notesMutation.isPending}>
+                {notesMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Save className="h-3.5 w-3.5 mr-1.5" />}
+                Save Notes
+              </Button>
+            )}
           </div>
 
           {/* Remove */}
