@@ -20,6 +20,7 @@ export default function IntakePage() {
   const [phone, setPhone] = useState("");
   const [department, setDepartment] = useState("");
   const [dayLeaving, setDayLeaving] = useState("");
+  const [email, setEmail] = useState("");
   const [loadNumber, setLoadNumber] = useState("");
   const [tagColor, setTagColor] = useState("");
   const [sessionCount, setSessionCount] = useState(0);
@@ -45,6 +46,7 @@ export default function IntakePage() {
     setLastName(a.last_name);
     if (a.phone) setPhone(a.phone);
     if (a.department) setDepartment(a.department);
+    if (a.email) setEmail(a.email);
     setShowSuggestions(false);
   };
 
@@ -60,7 +62,7 @@ export default function IntakePage() {
         firstName: firstName.trim(), lastName: lastName.trim(),
         department: department.trim() || null, phone: phone.trim() || null,
         dayLeaving: dayLeaving || null, truckId: Number(truckId),
-        loadNumber: loadNumber || null, tagColor: tagColor || null,
+        email: email.trim() || null, loadNumber: loadNumber || null, tagColor: tagColor || null,
       });
       return r.json();
     },
@@ -68,7 +70,7 @@ export default function IntakePage() {
       setSessionCount(c => c + 1);
       const statusMsg = (loadNumber && tagColor) ? "Checked in → Cleaning" : "Checked in";
       toast({ title: statusMsg, description: `${firstName} ${lastName} — ${department || "No dept"}` });
-      setFirstName(""); setLastName(""); setPhone(""); setDepartment(""); setDayLeaving(""); setLoadNumber(""); setTagColor("");
+      setFirstName(""); setLastName(""); setPhone(""); setDepartment(""); setDayLeaving(""); setEmail(""); setLoadNumber(""); setTagColor("");
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
       queryClient.invalidateQueries({ queryKey: ["/api/bags"] });
       nameRef.current?.focus();
@@ -158,6 +160,12 @@ export default function IntakePage() {
                 <Label className="text-sm font-medium">Department *</Label>
                 <Input value={department} onChange={e => setDepartment(e.target.value)} placeholder="Department" className="h-14 text-base mt-1" data-testid="input-department" />
               </div>
+            </div>
+
+            {/* Email */}
+            <div>
+              <Label className="text-sm font-medium">Email</Label>
+              <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email address" className="h-14 text-base mt-1" type="email" data-testid="input-email" />
             </div>
 
             {/* Day Leaving */}

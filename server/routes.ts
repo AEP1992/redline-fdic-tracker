@@ -60,6 +60,7 @@ export async function registerRoutes(httpServer: Server, app: Express) {
         notes: req.body.notes || null,
         load_number: loadNumber,
         tag_color: tagColor,
+        email: req.body.email || null,
         created_at: now,
         updated_at: now,
       });
@@ -139,9 +140,9 @@ export async function registerRoutes(httpServer: Server, app: Express) {
     const trucks = await storage.getTrucks();
     const truckMap = Object.fromEntries(trucks.map(t => [t.id, t.name]));
     const sl: Record<string, string> = { checked_in: "Checked In", cleaning: "In Cleaning", complete: "Complete", picked_up: "Picked Up" };
-    const headers = ["Last Name", "First Name", "Department", "Phone", "Day Leaving", "MEU", "Status", "Load #", "Tag Color", "Checked In", "Last Updated"];
+    const headers = ["Last Name", "First Name", "Department", "Phone", "Email", "Day Leaving", "MEU", "Status", "Load #", "Tag Color", "Checked In", "Last Updated"];
     const rows = allBags.map(b => [
-      b.last_name, b.first_name, b.department || "", b.phone || "", b.day_leaving || "",
+      b.last_name, b.first_name, b.department || "", b.phone || "", b.email || "", b.day_leaving || "",
       truckMap[b.truck_id] || "", sl[b.status] || b.status, b.load_number || "", b.tag_color || "", b.created_at, b.updated_at,
     ]);
     const csv = [headers.join(","), ...rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(","))].join("\n");

@@ -13,6 +13,7 @@ export type Bag = {
   notes: string | null;
   load_number: string | null;
   tag_color: string | null;
+  email: string | null;
   notified_at: string | null;
   created_at: string;
   updated_at: string;
@@ -32,6 +33,7 @@ export type Attendee = {
   last_name: string;
   phone: string | null;
   department: string | null;
+  email: string | null;
 };
 
 export const STATUSES = ["checked_in", "cleaning", "complete", "picked_up"] as const;

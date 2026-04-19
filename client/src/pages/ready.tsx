@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Phone, MessageSquare, CheckCircle, Search, MapPin, Calendar, Hash, Palette, Truck, Bell, BellOff } from "lucide-react";
+import { Phone, MessageSquare, CheckCircle, Search, MapPin, Calendar, Hash, Palette, Truck, Bell, BellOff, Mail } from "lucide-react";
 import { HelpDialog } from "@/components/help-dialog";
 import type { Bag, Truck as TruckType } from "@shared/schema";
 
@@ -139,22 +139,39 @@ function ReadyCard({ bag, truckMap }: { bag: Bag; truckMap: Record<number, strin
           <Badge className="bg-green-100 text-green-700 border-green-200">Complete</Badge>
         </div>
 
-        {/* Phone */}
-        {bag.phone ? (
-          <a href={`sms:${bag.phone.replace(/[^\d+]/g, '')}`}
-            className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 mb-3 hover:bg-blue-100 transition-colors"
-            data-testid={`sms-${bag.id}`}
-          >
-            <MessageSquare className="h-5 w-5 text-blue-600 flex-shrink-0" />
-            <span className="text-lg font-bold text-blue-700 tracking-wide">{bag.phone}</span>
-            <span className="text-xs text-blue-500 ml-auto">Tap to text</span>
-          </a>
-        ) : (
-          <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-3">
-            <Phone className="h-5 w-5 text-red-400 flex-shrink-0" />
-            <span className="text-sm text-red-500 font-medium">No phone number on file</span>
-          </div>
-        )}
+        {/* Contact Info */}
+        <div className="space-y-2 mb-3">
+          {bag.phone ? (
+            <a href={`sms:${bag.phone.replace(/[^\d+]/g, '')}`}
+              className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 hover:bg-blue-100 transition-colors"
+              data-testid={`sms-${bag.id}`}
+            >
+              <MessageSquare className="h-5 w-5 text-blue-600 flex-shrink-0" />
+              <span className="text-lg font-bold text-blue-700 tracking-wide">{bag.phone}</span>
+              <span className="text-xs text-blue-500 ml-auto">Tap to text</span>
+            </a>
+          ) : (
+            <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+              <Phone className="h-5 w-5 text-gray-300 flex-shrink-0" />
+              <span className="text-sm text-gray-400">No phone number</span>
+            </div>
+          )}
+          {bag.email ? (
+            <a href={`mailto:${bag.email}`}
+              className="flex items-center gap-3 bg-purple-50 border border-purple-200 rounded-lg px-4 py-3 hover:bg-purple-100 transition-colors"
+              data-testid={`email-${bag.id}`}
+            >
+              <Mail className="h-5 w-5 text-purple-600 flex-shrink-0" />
+              <span className="text-sm font-semibold text-purple-700">{bag.email}</span>
+              <span className="text-xs text-purple-400 ml-auto">Tap to email</span>
+            </a>
+          ) : (
+            <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+              <Mail className="h-5 w-5 text-gray-300 flex-shrink-0" />
+              <span className="text-sm text-gray-400">No email</span>
+            </div>
+          )}
+        </div>
 
         {/* Details */}
         <div className="flex flex-wrap gap-3 text-sm text-gray-500 mb-3">
@@ -173,7 +190,7 @@ function ReadyCard({ bag, truckMap }: { bag: Bag; truckMap: Record<number, strin
 
         {/* Actions */}
         <div className="flex gap-2">
-          {bag.phone && !isNotified && (
+          {(bag.phone || bag.email) && !isNotified && (
             <Button variant="outline" className="flex-1 h-14 text-base font-semibold bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100"
               onClick={() => notifyMutation.mutate()} disabled={notifyMutation.isPending} data-testid={`btn-notify-${bag.id}`}
             >

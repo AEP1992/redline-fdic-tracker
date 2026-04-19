@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Search, ChevronDown, ChevronUp, Clock, ArrowRight, Loader2, Phone, MapPin, Calendar, Hash, Palette, Trash2 } from "lucide-react";
+import { Search, ChevronDown, ChevronUp, Clock, ArrowRight, Loader2, Phone, MapPin, Calendar, Hash, Palette, Trash2, Mail } from "lucide-react";
 import { HelpDialog } from "@/components/help-dialog";
 import type { Bag, Truck, StatusLog } from "@shared/schema";
 
@@ -196,6 +196,7 @@ function BagRow({ bag, truckName, isExpanded, isSelected, onToggleExpand, onTogg
             <span className="text-muted-foreground">MEU: {truckName}</span>
             {bag.load_number && <span className="flex items-center gap-1.5 text-muted-foreground"><Hash className="h-3.5 w-3.5" />Load {bag.load_number}</span>}
             {bag.tag_color && <span className="flex items-center gap-1.5 text-muted-foreground"><Palette className="h-3.5 w-3.5" />{bag.tag_color} tag</span>}
+            {bag.email && <span className="flex items-center gap-1.5 text-muted-foreground"><Mail className="h-3.5 w-3.5" />{bag.email}</span>}
           </div>
 
           {/* Remove */}
